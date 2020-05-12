@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	. "github.com/srleohung/mongotopsql"
+	"github.com/srleohung/mongotopsql/mongodb"
+	"github.com/srleohung/mongotopsql/postgresql"
 	"go.mongodb.org/mongo-driver/bson"
 	"log"
-	. "mongotopsql"
-	"mongotopsql/mongodb"
-	"mongotopsql/postgresql"
 	"strings"
 	"sync"
 )
@@ -37,7 +37,7 @@ func main() {
 			fmt.Println(r)
 		}
 	*/
-
+	result = result[:8]
 	/* New PostgreSQL */
 	psqlURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s", "username", "password", "localhost", "5432", "database", "disable")
 	psql := postgresql.NewPostgreSQL(psqlURL)

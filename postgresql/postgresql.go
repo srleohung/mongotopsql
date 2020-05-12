@@ -37,9 +37,17 @@ func (postgreSQL *PostgreSQL) CreateTableIfNotExists(table string, fields []Fiel
 	schema := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (", table)
 	for i, field := range fields {
 		if i == len(fields)-1 {
-			schema = fmt.Sprintf("%s %s %s %s, UNIQUE(_id));", schema, field.Name, field.Type, field.Default)
+			if field.Default == "" {
+				schema = fmt.Sprintf("%s %s %s, UNIQUE(_id));", schema, field.Name, field.Type)
+			} else {
+				schema = fmt.Sprintf("%s %s %s DEFAULT '%s', UNIQUE(_id));", schema, field.Name, field.Type, field.Default)
+			}
 		} else {
-			schema = fmt.Sprintf("%s %s %s %s,", schema, field.Name, field.Type, field.Default)
+			if field.Default == "" {
+				schema = fmt.Sprintf("%s %s %s,", schema, field.Name, field.Type)
+			} else {
+				schema = fmt.Sprintf("%s %s %s DEFAULT '%s',", schema, field.Name, field.Type, field.Default)
+			}
 		}
 	}
 	postgreSQL.db.MustExec(schema)
@@ -66,10 +74,12 @@ func (postgreSQL *PostgreSQL) Insert(table string, rows []Row) error {
 func (postgreSQL *PostgreSQL) AddColumnIfNotExists(table string, fields []Field) {
 	postgreSQL.mutex.RLock()
 	defer postgreSQL.mutex.RUnlock()
+	var schema string
 	for _, field := range fields {
-		schema := fmt.Sprintf("ALTER TABLE %s ADD %s %s DEFAULT '%s';", table, field.Name, field.Type, field.Default)
 		if field.Default == "" {
 			schema = fmt.Sprintf("ALTER TABLE %s ADD %s %s;", table, field.Name, field.Type)
+		} else {
+			schema = fmt.Sprintf("ALTER TABLE %s ADD %s %s DEFAULT '%s';", table, field.Name, field.Type, field.Default)
 		}
 		postgreSQL.db.Exec(schema)
 	}

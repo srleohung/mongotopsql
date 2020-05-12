@@ -3,9 +3,9 @@ package mongotopsql
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/srleohung/mongotopsql/postgresql"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"mongotopsql/postgresql"
 	"strings"
 )
 
