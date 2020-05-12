@@ -3,22 +3,22 @@ Switch MongoDB to PostgreSQL
 
 # Usage
 To use mongotopsql in your Go code:
-```
+```go
 import "github.com/srleohung/mongotopsql"
 ```
 
 To install mongotopsql in your $GOPATH:
-```
+```bash
 go get github.com/srleohung/mongotopsql
 ```
 
 To use bson in your Go code:
-```
+```go
 import "go.mongodb.org/mongo-driver/bson"
 ```
 
 If you want to change the sql data type used or the default value of sql data when switching mongo to psql:
-```
+```go
 mongotopsql.SQL_DATA_TYPE["string"] = "TEXT"
 mongotopsql.SQL_DATA_DEFAULT["string"] = ""
 ```
