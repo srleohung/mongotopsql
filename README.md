@@ -14,7 +14,7 @@ go get github.com/srleohung/mongotopsql
 
 To use bson in your Go code:
 ```
-"go.mongodb.org/mongo-driver/bson"
+import "go.mongodb.org/mongo-driver/bson"
 ```
 
 If you want to change the sql data type used or the default value of sql data when switching mongo to psql:
@@ -24,7 +24,7 @@ mongotopsql.SQL_DATA_DEFAULT["string"] = ""
 ```
 
 # Example
-```
+```go
 package main
 
 import (
