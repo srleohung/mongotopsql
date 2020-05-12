@@ -37,7 +37,7 @@ func main() {
 			fmt.Println(r)
 		}
 	*/
-	result = result[:8]
+
 	/* New PostgreSQL */
 	psqlURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s", "username", "password", "localhost", "5432", "database", "disable")
 	psql := postgresql.NewPostgreSQL(psqlURL)
