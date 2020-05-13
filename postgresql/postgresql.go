@@ -38,15 +38,15 @@ func (postgreSQL *PostgreSQL) CreateTableIfNotExists(table string, fields []Fiel
 	for i, field := range fields {
 		if i == len(fields)-1 {
 			if field.Default == "" {
-				schema = fmt.Sprintf("%s %s %s, UNIQUE(_id));", schema, field.Name, field.Type)
+				schema = fmt.Sprintf("%s \"%s\" %s, UNIQUE(_id));", schema, field.Name, field.Type)
 			} else {
-				schema = fmt.Sprintf("%s %s %s DEFAULT '%s', UNIQUE(_id));", schema, field.Name, field.Type, field.Default)
+				schema = fmt.Sprintf("%s \"%s\" %s DEFAULT '%s', UNIQUE(_id));", schema, field.Name, field.Type, field.Default)
 			}
 		} else {
 			if field.Default == "" {
-				schema = fmt.Sprintf("%s %s %s,", schema, field.Name, field.Type)
+				schema = fmt.Sprintf("%s \"%s\" %s,", schema, field.Name, field.Type)
 			} else {
-				schema = fmt.Sprintf("%s %s %s DEFAULT '%s',", schema, field.Name, field.Type, field.Default)
+				schema = fmt.Sprintf("%s \"%s\" %s DEFAULT '%s',", schema, field.Name, field.Type, field.Default)
 			}
 		}
 	}
