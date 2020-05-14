@@ -84,4 +84,20 @@ func main() {
 	}
 	wg.Wait()
 	log.Printf("Successfully switched MongoDB to PostgreSQL")
+
+	/* New Mongo To PostgreSQL Synchronizer */
+	mtps := NewMTPSynchronizer(mongo, psql, "collectionName", "monitorField", 1)
+	err := mtps.Start()
+	if err != nil {
+		log.Print(err)
+	}
+
+	/* Stop Synchronizer */
+	/*
+		mtps.Stop()
+	*/
+
+	/* Forever */
+	forever := make(chan bool, 1)
+	<-forever
 }

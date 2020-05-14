@@ -23,6 +23,17 @@ mongotopsql.SQL_DATA_TYPE["string"] = "TEXT"
 mongotopsql.SQL_DATA_DEFAULT["string"] = ""
 ```
 
+To use mongotopsql to synchronize MongoDB and PostgreSQL data:
+```go
+mongo := mongodb.NewMongoDB(mongoURL)
+psql := postgresql.NewPostgreSQL(psqlURL)
+collectionName := "Enter Your MongoDB Collection Name"
+monitorField := "Enter Your MongoDB Collection Data Insert Or Update Time Field"
+intervalSecond := 1
+mtps := NewMTPSynchronizer(mongo, psql, collectionName, monitorField, intervalSecond)
+mtps.Start()
+```
+
 # Example
 ```go
 package main
@@ -111,5 +122,21 @@ func main() {
 	}
 	wg.Wait()
 	log.Printf("Successfully switched MongoDB to PostgreSQL")
+
+	/* New Mongo To PostgreSQL Synchronizer */
+	mtps := NewMTPSynchronizer(mongo, psql, "collectionName", "monitorField", 1)
+	err := mtps.Start()
+	if err != nil {
+		log.Print(err)
+	}
+	
+	/* Stop Synchronizer */
+	/*
+		mtps.Stop()
+	*/
+
+	/* Forever */
+	forever := make(chan bool, 1)
+	<-forever
 }
 ```

@@ -5,6 +5,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"sync"
+	"time"
 )
 
 type PostgreSQL struct {
@@ -71,6 +72,27 @@ func (postgreSQL *PostgreSQL) Insert(table string, rows []Row) error {
 	return err
 }
 
+func (postgreSQL *PostgreSQL) InsertAndUpdate(table string, rows []Row) error {
+	postgreSQL.mutex.RLock()
+	defer postgreSQL.mutex.RUnlock()
+	schema := fmt.Sprintf("INSERT INTO %s (", table)
+	var value string
+	var update string
+	for i, row := range rows {
+		if i == len(rows)-1 {
+			update = fmt.Sprintf("%s %s = '%s'", update, row.Field, row.Value)
+			value = fmt.Sprintf("%s '%s') ON CONFLICT (\"_id\") DO UPDATE SET %s;", value, row.Value, update)
+			schema = fmt.Sprintf("%s %s) VALUES (%s", schema, row.Field, value)
+		} else {
+			update = fmt.Sprintf("%s %s = '%s',", update, row.Field, row.Value)
+			value = fmt.Sprintf("%s '%s',", value, row.Value)
+			schema = fmt.Sprintf("%s %s,", schema, row.Field)
+		}
+	}
+	_, err := postgreSQL.db.Exec(schema)
+	return err
+}
+
 func (postgreSQL *PostgreSQL) AddColumnIfNotExists(table string, fields []Field) {
 	postgreSQL.mutex.RLock()
 	defer postgreSQL.mutex.RUnlock()
@@ -83,4 +105,18 @@ func (postgreSQL *PostgreSQL) AddColumnIfNotExists(table string, fields []Field)
 		}
 		postgreSQL.db.Exec(schema)
 	}
+}
+
+func (postgreSQL *PostgreSQL) GetLastUpdateTime(table string, field string) (time.Time, error) {
+	postgreSQL.mutex.RLock()
+	defer postgreSQL.mutex.RUnlock()
+	schema := fmt.Sprintf("SELECT %s FROM %s ORDER BY %s DESC LIMIT 1;", field, table, field)
+	var v string
+	var t time.Time
+	err := postgreSQL.db.Get(&v, schema)
+	if err != nil {
+		return t, err
+	}
+	t, err = time.Parse(time.RFC3339, v)
+	return t, err
 }
